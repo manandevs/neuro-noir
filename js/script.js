@@ -3,9 +3,9 @@ $(function () {
   // 1. SELECTORS & VARIABLES
   // =================================================================
   const $body = $('body');
-  const pageId = $body.attr('id'); // "page-home", "page-gallery", "page-community", "page-pricing"
+  const pageId = $body.attr('id');
 
-  // Main UI
+  // UI Elements
   const $generateBtn = $('#generateBtn');
   const $promptInput = $('#prompt');
   const $loading = $('#loading');
@@ -17,26 +17,36 @@ $(function () {
   const $toastContainer = $('#toastContainer');
   const $emptyState = $('#emptyState');
 
-  // Modal UI
+  // Modal
   const $imageModal = $('#imageModal');
   const $modalImage = $('#modalImage');
   const $modalDownloadBtn = $('#modalDownloadBtn');
   const $closeModalBtn = $('#closeModalBtn');
 
-  // Cookie Popup UI
+  // Cookie Popup
   const $cookiePopup = $('#cookiePopup');
   const $cookieLoading = $('#cookieLoading');
   const $cookieContent = $('#cookieContent');
   const $acceptCookies = $('#acceptCookies');
   const $declineCookies = $('#declineCookies');
 
+  // Analytics Widget
+  const $liveSystemWidget = $('#liveSystemWidget'); // The main container
+  const $analyticsBody = $('#analyticsBody');
+  const $minAnalytics = $('#minAnalytics');
+  const $removeAnalytics = $('#removeAnalytics');
+  const $toggleAnalytics = $('#toggleAnalytics');
+  const $liveMetric = $('#liveMetric');
+
   // State
   let currentIndex = 0;
   const initialLoadCount = 8;
   const LS_KEY = 'ai_vision_creations_v1';
+  let analyticsInterval;
+  let isAnalyticsMinimized = false;
 
   // =================================================================
-  // 2. DATA SOURCE (Inspiration)
+  // 2. DATA SOURCE
   // =================================================================
   const showcaseLibrary = [
     { badge: "Cyberpunk", prompt: "A futuristic cyborg with glowing neon circuits, cinematic lighting, 8k resolution, hyperrealistic, night city background" },
@@ -53,128 +63,84 @@ $(function () {
     { badge: "Product", prompt: "Professional product photography of a luxury perfume bottle, water splash, studio lighting, bokeh background, elegant" },
     { badge: "Fashion", prompt: "Avant-garde fashion model wearing a dress made of liquid metal, futuristic runway, high fashion photography, vogue style" },
     { badge: "Origami", prompt: "A complex origami dragon made of gold paper, black background, studio lighting, sharp edges, 3d render" },
-    { badge: "Minimalist", prompt: "Minimalist landscape of a single tree in a snowy field, high contrast black and white photography, fine art" },
-    { badge: "Retro", prompt: "Synthwave sunset over a grid landscape, 1980s retro style, purple and orange gradient, vhs glitch effect" },
-    { badge: "Food", prompt: "Delicious gourmet burger with melting cheese, steam rising, professional food photography, dark moody background" },
-    { badge: "Surreal", prompt: "A giant whale flying through the clouds above a city, dreamlike surrealism, salvador dali style, oil painting" },
-    { badge: "Steampunk", prompt: "A steampunk owl made of brass gears and leather, vintage clockwork style, intricate mechanical details" },
-    { badge: "Interior", prompt: "Cozy scandinavian living room, fireplace, rain on window, warm lighting, hygge atmosphere, interior design photography" },
-    { badge: "Character", prompt: "A warrior princess in golden armor, epic fantasy character design, blizzard background, glowing sword" },
-    { badge: "Pixel Art", prompt: "Pixel art city street at night, rain reflections, cyberpunk aesthetic, 16-bit style, detailed" },
-    { badge: "Watercolor", prompt: "Watercolor painting of a rainy street in Paris, eiffel tower in background, soft artistic strokes, pastel colors" },
-    { badge: "Low Poly", prompt: "Low poly 3d render of a fox in a forest, geometric shapes, flat shading, vibrant colors, mobile game asset style" },
-    { badge: "Neon", prompt: "A neon tiger running through a dark city, glowing fur, motion blur, cinematic action shot, cyberpunk" },
-    { badge: "Vintage", prompt: "1950s vintage diner, classic cars outside, chrome details, nostalgic atmosphere, kodachrome film style" },
-    { badge: "Space", prompt: "A black hole consuming a star, accretion disk, cinematic space scene, interstellar movie style, 8k" },
-    { badge: "Floral", prompt: "Explosion of colorful flowers and petals, studio lighting, high speed photography, vibrant colors, detailed textures" },
-    { badge: "Ceramic", prompt: "Cute ceramic ghost figurine, glossy texture, studio lighting, simple background, 3d render style" },
-    { badge: "Isometric", prompt: "Isometric view of a high-tech computer lab, servers, cables, scientists, detailed 3d render, clean style" },
-    { badge: "Glass", prompt: "A chess piece made of crystal glass, refraction of light, caustics, realistic 3d render, macro shot" },
-    { badge: "Sketch", prompt: "Pencil sketch of a human eye, realistic shading, graphite texture, sketchbook paper background" },
-    { badge: "Cybernetic", prompt: "A futuristic motorcycle with hubless wheels, akira style, red and black color scheme, speed lines" },
-    { badge: "Mythology", prompt: "Zeus holding a lightning bolt, storm clouds, epic greek mythology style, dramatic lighting, marble statue texture" },
-    { badge: "Graffiti", prompt: "Colorful graffiti art on a brick wall, street art style, spray paint texture, urban vibe, banksy style" },
-    { badge: "Papercut", prompt: "Layered papercut art of a mountain landscape, depth of field, shadowbox effect, soft lighting, craft style" },
-    { badge: "Viking", prompt: "Viking longship in a storm, crashing waves, lightning, epic cinematic shot, assassin's creed valhalla style" },
-    { badge: "Robot", prompt: "Cute rusted robot holding a flower, wall-e style, post-apocalyptic nature taking over, emotional" },
-    { badge: "Glitch", prompt: "Portrait of a person with digital glitch effects, datamoshing, cyber error style, rgb shift" },
-    { badge: "Marble", prompt: "Classical marble sculpture of an angel, museum lighting, smooth texture, renaissance art style" },
-    { badge: "Smoke", prompt: "Shape of a dancer made of colored smoke, black background, swirling wisps, fluid motion, high contrast" },
-    { badge: "Knolling", prompt: "Knolling photography of vintage camera gear, organized neatly, overhead shot, clean background" },
-    { badge: "Candy", prompt: "A landscape made entirely of candy and sweets, chocolate river, lollipop trees, vibrant colors, 3d render" },
-    { badge: "Noir", prompt: "Film noir detective standing in the rain, fedora, trench coat, black and white, dramatic shadows, moody" },
-    { badge: "Mosaic", prompt: "Mosaic tile portrait of a cat, intricate patterns, vibrant ceramic tiles, ancient roman style" },
-    { badge: "Lego", prompt: "A grand castle made of lego bricks, depth of field, macro photography, plastic texture, vibrant" },
-    { badge: "Double Exp", prompt: "Double exposure photography of a woman's silhouette and a forest, artistic, surreal, nature blend" },
-    { badge: "Vaporwave", prompt: "Vaporwave aesthetic statue bust, glitches, pink and teal colors, grid background, 90s internet vibe" },
-    { badge: "Zodiac", prompt: "Personification of the Scorpio zodiac sign, dark mystery, scorpion tail, dramatic lighting, fantasy art" }
+    { badge: "Minimalist", prompt: "Minimalist landscape of a single tree in a snowy field, high contrast black and white photography, fine art" }
   ];
 
   // =================================================================
-  // 3. INITIALIZATION ROUTER
+  // 3. PAGE INITIALIZATION
   // =================================================================
-  
+
   if (pageId === 'page-home') {
-    // 1. Show saved content
     $loadMoreContainer.removeClass('hidden');
     loadUserCreations(false);
     loadImages(0, initialLoadCount);
     currentIndex = initialLoadCount;
 
-    // 2. Cookie Checks
-    checkCookieConsent();
+    // --- CHECK COOKIES ON LOAD ---
+    const consent = getCookie('ai_vision_consent');
+    if (consent) {
+      // User already interacted before, show Analytics immediately
+      showAnalyticsWidget();
+    } else {
+      // New user, show Cookie Popup
+      showCookiePopup();
+    }
+
+    // Restore Prompt
     const lastPrompt = getCookie('last_prompt');
-    
     if (lastPrompt && $promptInput.length) {
       $promptInput.val(lastPrompt);
-      // Optional: Flash toast
-      // showToast("Restored your last prompt", "success");
     }
-  } 
+  }
   else if (pageId === 'page-gallery') {
-    const hasImages = loadUserCreations(true); 
-    if(!hasImages) $emptyState.removeClass('hidden').addClass('flex');
-  } 
+    const hasImages = loadUserCreations(true);
+    if (!hasImages && $emptyState.length) $emptyState.removeClass('hidden').addClass('flex');
+  }
   else if (pageId === 'page-community') {
     loadImages(0, 12);
     currentIndex = 12;
   }
 
   // =================================================================
-  // 4. EVENT LISTENERS
+  // 4. EVENT LISTENERS & LOGIC
   // =================================================================
 
   // --- Generation ---
   $generateBtn.on('click', startGeneration);
-  $promptInput.on('keypress', function(e) { if(e.which == 13) startGeneration(); });
-  
-  // Save prompt to cookie on typing (7 days)
-  $promptInput.on('input change', function() {
-    setCookie('last_prompt', $(this).val(), 7); 
-  });
+  $promptInput.on('keypress', function (e) { if (e.which == 13) startGeneration(); });
+  $promptInput.on('input change', function () { setCookie('last_prompt', $(this).val(), 7); });
 
   // --- Load More ---
   $loadMoreBtn.on('click', loadNextBatch);
 
-  // --- Trending Chips ---
-  $('.style-chip').on('click', function() {
+  // --- Chips ---
+  $('.style-chip').on('click', function () {
     const stylePrompt = $(this).data('prompt');
     $promptInput.val(stylePrompt).focus();
     setCookie('last_prompt', stylePrompt, 7);
-    
-    // Visual Feedback
     $promptInput.parent().parent().addClass('ring-1 ring-accent-primary');
     setTimeout(() => { $promptInput.parent().parent().removeClass('ring-1 ring-accent-primary'); }, 500);
   });
 
-  // --- Auto Enhancer ---
-  $enhanceBtn.on('click', function() {
+  // --- Enhancer ---
+  $enhanceBtn.on('click', function () {
     let currentText = $promptInput.val().trim();
-    const styles = ["cinematic lighting", "cyberpunk style", "unreal engine 5", "digital art masterpiece", "dramatic lighting 8k", "hyperrealistic"];
-    
-    if (!currentText) {
-      const starters = ["A futuristic cat", "A floating island", "An astronaut in a flower field"];
-      currentText = starters[Math.floor(Math.random() * starters.length)];
-    }
-    
+    const styles = ["cinematic lighting", "cyberpunk style", "unreal engine 5", "digital art masterpiece", "dramatic lighting 8k"];
+    if (!currentText) currentText = "A futuristic city";
     const randomStyle = styles[Math.floor(Math.random() * styles.length)];
     const newText = `${currentText}, ${randomStyle}`;
-    
     $promptInput.val(newText);
     setCookie('last_prompt', newText, 7);
-
-    // Visual Feedback
     $enhanceStatus.removeClass('opacity-0');
     setTimeout(() => $enhanceStatus.addClass('opacity-0'), 1500);
   });
 
-  // --- Modal Logic (Event Delegation) ---
-  $(document).on('click', '.view-btn', function(e) {
+  // --- Modal ---
+  $(document).on('click', '.view-btn', function (e) {
     e.preventDefault();
     const imageUrl = $(this).data('url');
     $modalImage.attr('src', imageUrl);
     $modalDownloadBtn.attr('href', imageUrl);
-    
     $imageModal.removeClass('hidden');
     setTimeout(() => $imageModal.removeClass('opacity-0'), 10);
     $('body').addClass('overflow-hidden');
@@ -189,34 +155,145 @@ $(function () {
     }, 300);
   }
   $closeModalBtn.on('click', closeModal);
-  $imageModal.on('click', function(e) { if (e.target === this) closeModal(); });
-  $(document).on('keydown', function(e) { if (e.key === "Escape") closeModal(); });
+  $imageModal.on('click', function (e) { if (e.target === this) closeModal(); });
+  $(document).on('keydown', function (e) { if (e.key === "Escape") closeModal(); });
 
-  // --- Delete Logic ---
-  $(document).on('click', '.delete-btn', function(e) {
+  // --- Delete ---
+  $(document).on('click', '.delete-btn', function (e) {
     e.stopPropagation();
     const $card = $(this).closest('.image-card');
     const idToDelete = $(this).data('id');
     removeFromLocalStorage(idToDelete);
-    $card.css('transform', 'scale(0.9)').fadeOut(300, function() { $(this).remove(); });
+    $card.css('transform', 'scale(0.9)').fadeOut(300, function () { $(this).remove(); });
     showToast("Image Deleted", "error");
   });
 
-  // --- Cookie Popup Logic ---
-  $acceptCookies.on('click', function() {
-    setCookie('ai_vision_consent', 'accepted', 30);
+  // -----------------------------------------------------------
+  // COOKIE & ANALYTICS WORKFLOW (FIXED)
+  // -----------------------------------------------------------
+
+  function showCookiePopup() {
+    if ($cookiePopup.length) {
+      $cookiePopup.removeClass('hidden');
+      setTimeout(() => { $cookiePopup.removeClass('translate-y-10 opacity-0'); }, 100);
+
+      // Simulate loading check inside popup
+      setTimeout(() => {
+        $cookieLoading.hide();
+        $cookieContent.removeClass('hidden').addClass('animate-fade-in');
+      }, 1000);
+    }
+  }
+
+  function transitionToAnalytics() {
+    // 1. Fade out Cookie Popup
     $cookiePopup.addClass('translate-y-10 opacity-0');
-    setTimeout(() => $cookiePopup.addClass('hidden'), 500);
+
+    // 2. After fade out, remove popup and show widget
+    setTimeout(() => {
+      $cookiePopup.addClass('hidden');
+      showAnalyticsWidget();
+    }, 500);
+  }
+
+  function showAnalyticsWidget() {
+    if (!$liveSystemWidget.length) return;
+
+    $liveSystemWidget.removeClass('hidden');
+    // Allow reflow
+    void $liveSystemWidget[0].offsetWidth;
+    $liveSystemWidget.removeClass('opacity-0 translate-y-10');
+
+    // Initialize Chart
+    initLiveChart();
+  }
+
+  // Button Handlers
+  $acceptCookies.on('click', function () {
+    setCookie('ai_vision_consent', 'accepted', 30);
     showToast("Preferences Saved", "success");
+    transitionToAnalytics();
   });
 
-  $declineCookies.on('click', function() {
-    $cookiePopup.addClass('translate-y-10 opacity-0');
-    setTimeout(() => $cookiePopup.addClass('hidden'), 500);
+  $declineCookies.on('click', function () {
+    setCookie('ai_vision_consent', 'declined', 30);
+    transitionToAnalytics(); // Show chart even if declined (UX choice)
   });
+
+  // Analytics Widget Controls
+  $minAnalytics.on('click', function (e) {
+    e.stopPropagation();
+    if (isAnalyticsMinimized) {
+      $analyticsBody.slideDown(300);
+      $(this).html('<i class="fa-solid fa-minus text-xs"></i>');
+    } else {
+      $analyticsBody.slideUp(300);
+      $(this).html('<i class="fa-solid fa-chevron-up text-xs"></i>');
+    }
+    isAnalyticsMinimized = !isAnalyticsMinimized;
+  });
+
+  $removeAnalytics.on('click', function (e) {
+    e.stopPropagation();
+    $liveSystemWidget.addClass('opacity-0 translate-y-10');
+    setTimeout(() => {
+      $liveSystemWidget.remove();
+      if (analyticsInterval) clearInterval(analyticsInterval);
+    }, 500);
+  });
+
+  // Chart Logic
+  function initLiveChart() {
+    const canvas = document.getElementById('alwaysOnChart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+
+    const initialData = [45, 59, 80, 81, 56, 55, 70, 65, 85, 90];
+    const labels = Array(10).fill('');
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 150);
+    gradient.addColorStop(0, 'rgba(124, 58, 237, 0.5)');
+    gradient.addColorStop(1, 'rgba(124, 58, 237, 0)');
+
+    const myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Load',
+          data: initialData,
+          backgroundColor: gradient,
+          borderColor: '#7c3aed',
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+        scales: { x: { display: false }, y: { display: false, min: 0, max: 100 } },
+        animation: { duration: 1000, easing: 'linear' }
+      }
+    });
+
+    analyticsInterval = setInterval(() => {
+      const newDataPoint = Math.floor(Math.random() * (95 - 40 + 1)) + 40;
+      const currentData = myChart.data.datasets[0].data;
+      currentData.shift();
+      currentData.push(newDataPoint);
+      myChart.update();
+      $('#liveMetric').text(newDataPoint + "%");
+    }, 2000);
+  }
+
 
   // =================================================================
-  // 5. CORE FUNCTIONS
+  // 5. CORE FUNCTIONS (Generation, Storage, Toast)
   // =================================================================
 
   function startGeneration() {
@@ -227,44 +304,45 @@ $(function () {
       return;
     }
 
+    setCookie('last_prompt', promptText, 7);
+
     $generateBtn.prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
     $loading.removeClass('hidden').addClass('flex');
 
-    // Simulate Network Delay for UX
     setTimeout(() => {
       const seed = Math.floor(Math.random() * 1000000);
       const uniqueId = Date.now();
-      
+
       renderCard(promptText, "New", "prepend", true, uniqueId, seed);
       saveToLocalStorage(uniqueId, promptText, seed);
 
       $generateBtn.prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
       $loading.addClass('hidden').removeClass('flex');
       $promptInput.val('');
-      setCookie('last_prompt', '', -1); // Clear cookie
-      
-      showToast("Image Generated Successfully!", "success");
+      setCookie('last_prompt', '', -1);
+
+      showToast("Image Generated!", "success");
+
+      // === NEW ADDITION: SCROLL TO GALLERY ===
+      $('html, body').animate({
+        scrollTop: $grid.offset().top - 250 // Offset allows seeing the "Gallery" title
+      }, 1000);
+
     }, 1500);
   }
 
   function renderCard(promptText, badgeText, method = 'prepend', isUserGenerated = false, id = null, seed = null) {
     if (!seed) seed = promptText.length + 12345;
-    
-    // Pollinations URL
     const width = 800;
     const height = 1066;
     const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?seed=${seed}&width=${width}&height=${height}&nologin=true`;
-    
-    // Title Logic
+
     const words = promptText.split(' ');
     const title = words.slice(0, 4).join(' ') + (words.length > 4 ? '...' : '');
+    const badgeClass = isUserGenerated ? 'bg-accent-primary shadow-accent-primary/20' : 'bg-white/10 backdrop-blur-md border border-white/20';
 
-    const badgeClass = isUserGenerated 
-      ? 'bg-accent-primary shadow-accent-primary/20' 
-      : 'bg-white/10 backdrop-blur-md border border-white/20';
-    
-    const deleteBtnHTML = isUserGenerated 
-      ? `<button class="delete-btn w-9 h-9 flex items-center justify-center rounded-lg bg-red-500/20 backdrop-blur-md border border-red-500/30 hover:bg-red-500 hover:text-white text-red-400 transition-all" title="Delete" data-id="${id}"><i class="fa-solid fa-trash text-xs"></i></button>` 
+    const deleteBtnHTML = isUserGenerated
+      ? `<button class="delete-btn w-9 h-9 flex items-center justify-center rounded-lg bg-red-500/20 backdrop-blur-md border border-red-500/30 hover:bg-red-500 hover:text-white text-red-400 transition-all" title="Delete" data-id="${id}"><i class="fa-solid fa-trash text-xs"></i></button>`
       : ``;
 
     const cardHTML = `
@@ -290,20 +368,6 @@ $(function () {
     else $grid.append(cardHTML);
   }
 
-  // --- Helpers ---
-
-  function checkCookieConsent() {
-    const consent = getCookie('ai_vision_consent');
-    if (!consent && $cookiePopup.length) {
-        $cookiePopup.removeClass('hidden');
-        setTimeout(() => { $cookiePopup.removeClass('translate-y-10 opacity-0'); }, 100);
-        setTimeout(() => {
-            $cookieLoading.hide();
-            $cookieContent.removeClass('hidden').addClass('animate-fade-in');
-        }, 1500);
-    }
-  }
-
   function loadUserCreations(checkEmpty = false) {
     const savedCreations = getLocalStorageData();
     if (savedCreations.length > 0) {
@@ -319,7 +383,7 @@ $(function () {
     let nextIndex = currentIndex + 8;
     if (nextIndex >= showcaseLibrary.length) {
       nextIndex = showcaseLibrary.length;
-      $loadMoreContainer.fadeOut();
+      if ($loadMoreContainer.length) $loadMoreContainer.fadeOut();
     }
     loadImages(currentIndex, nextIndex);
     currentIndex = nextIndex;
@@ -330,11 +394,9 @@ $(function () {
     batch.forEach((item, index) => {
       setTimeout(() => {
         renderCard(item.prompt, item.badge, 'append', false);
-      }, index * 100); 
+      }, index * 100);
     });
   }
-
-  // --- Storage Functions ---
 
   function getLocalStorageData() {
     try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch (e) { return []; }
