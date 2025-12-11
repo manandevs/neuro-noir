@@ -4,6 +4,7 @@ tailwind.config = {
       fontFamily: {
         heading: ['Costume', 'sans-serif'],
         sans: ['Marseille', 'sans-serif'],
+        sansSerif: ['sans-serif'],
       },
       colors: {
         bg: { main: '#050505', card: '#0a0a0a' },

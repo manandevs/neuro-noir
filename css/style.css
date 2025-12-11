@@ -1,6 +1,4 @@
-/* --- Font Definitions --- 
-   Note: Paths go up one level (..) to get out of css folder, then into fonts folder 
-*/
+/* --- Font Definitions --- */
 @font-face {
   font-family: 'Costume';
   src: url('../fonts/Costume.otf') format('opentype');
@@ -23,15 +21,22 @@ body {
 /* --- Utility Classes --- */
 .glass-panel {
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* --- Loader Animation --- */
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #050505; }
+::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #7c3aed; }
+
+/* Loader Animation */
 .loader {
-  width: 48px;
-  height: 48px;
-  border: 3px solid #FFF;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   display: inline-block;
   position: relative;
@@ -50,7 +55,7 @@ body {
   height: 40px;
   border-radius: 50%;
   border: 3px solid transparent;
-  border-bottom-color: #7c3aed; /* Matches accent-primary */
+  border-top-color: #7c3aed;
 }
 
 @keyframes rotation {
