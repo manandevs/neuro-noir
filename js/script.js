@@ -351,7 +351,7 @@ $(function () {
         <div class="absolute top-4 right-4 ${badgeClass} text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-lg z-10 uppercase tracking-wider">${badgeText}</div>
         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
           <div class="transform translate-y-4 group-hover:translate-y-0 transition duration-500 ease-out">
-            <h3 class="font-heading text-2xl text-white mb-1 leading-none capitalize truncate tracking-wide">${title}</h3>
+            <h3 class="font-heading text-2xl text-white mb-1 pt-10 px-1 capitalize truncate tracking-wide">${title}</h3>
             <p class="text-gray-300 text-xs font-light line-clamp-2 mb-4 leading-relaxed opacity-80">${promptText}</p>
             <div class="flex gap-2">
               <button class="view-btn flex-1 bg-white text-black text-center text-xs py-2.5 rounded-lg font-bold hover:bg-gray-200 transition-colors tracking-wide flex items-center justify-center gap-2" data-url="${imageUrl}">
