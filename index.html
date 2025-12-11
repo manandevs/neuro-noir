@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Vision | Creator</title>
+
+  <!-- 1. Libraries -->
+  <!-- jQuery -->
+  <script src="./js/jquery.js"></script>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- 2. Local Files -->
+  <!-- Tailwind Config (Must load after Tailwind Script) -->
+  <script src="js/tailwind.config.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="overflow-x-hidden min-h-screen flex flex-col relative font-sans">
+
+  <!-- Background Ambience -->
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div
+      class="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-accent-primary/20 rounded-full blur-[120px] animate-pulse-slow">
+    </div>
+    <div
+      class="absolute bottom-[-10%] right-[10%] w-[600px] h-[600px] bg-accent-secondary/10 rounded-full blur-[100px]">
+    </div>
+    <div class="absolute inset-0 opacity-[0.2]"
+      style="background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(to right, #333 1px, transparent 1px); background-size: 40px 40px;">
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="relative z-50 w-full pt-6 px-6">
+    <div class="max-w-7xl mx-auto flex justify-between items-center glass-panel rounded-full px-6 py-4">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center font-heading font-bold text-xl">
+          AV</div>
+        <span class="font-heading text-xl tracking-wide">AI Vision</span>
+      </div>
+      <div class="hidden md:flex gap-8 text-sm text-gray-400 font-medium tracking-wide">
+        <a href="#" class="hover:text-white transition-colors">Create</a>
+        <a href="#" class="hover:text-white transition-colors">Showcase</a>
+      </div>
+      <button
+        class="bg-white text-black px-6 py-2 rounded-full font-bold text-sm hover:scale-105 transition-transform tracking-wide">Login</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="relative z-10 flex-grow flex flex-col items-center pt-20 pb-20 px-4">
+
+    <!-- Hero Title -->
+    <div class="text-center max-w-4xl mx-auto mb-16 animate-fade-in">
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-primary/10 border border-accent-primary/20 text-accent-glow text-xs font-bold mb-6 uppercase tracking-widest">
+        <span class="w-1.5 h-1.5 rounded-full bg-accent-glow animate-pulse"></span>
+        Free Unlimited Generation
+      </div>
+      <h1 class="font-heading text-6xl md:text-8xl leading-[0.9] tracking-tight mb-6">
+        Turn Words <br /><span
+          class="text-gradient bg-clip-text text-transparent bg-gradient-to-r from-accent-primary to-accent-secondary">Into
+          Reality.</span>
+      </h1>
+      <p class="text-gray-400 text-lg md:text-xl max-w-xl mx-auto leading-relaxed font-light">
+        Powered by open-source diffusion models.
+      </p>
+    </div>
+
+    <!-- Input Area -->
+    <div class="w-full max-w-2xl relative group animate-fade-in" style="animation-delay: 0.2s;">
+      <div
+        class="absolute -inset-1 bg-gradient-to-r from-accent-primary to-accent-secondary rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500">
+      </div>
+      <div
+        class="relative bg-bg-card border border-white/10 rounded-2xl p-2 flex flex-col md:flex-row items-center gap-2 shadow-2xl">
+        <div class="flex-grow w-full relative">
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"><i
+              class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <input type="text" id="prompt"
+            class="w-full bg-transparent border-none text-white placeholder-gray-600 pl-12 pr-4 py-4 focus:outline-none text-lg font-light tracking-wide"
+            placeholder="Cyberpunk street with neon rain..." autocomplete="off">
+        </div>
+        <button id="generateBtn"
+          class="w-full md:w-auto bg-white text-black px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 group/btn">
+          <span>Create</span>
+          <i class="fa-solid fa-arrow-right -rotate-45 group-hover/btn:rotate-0 transition-transform duration-300"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="hidden mt-12 flex-col items-center gap-4 animate-fade-in">
+      <div class="loader"></div>
+      <span class="text-gray-400 text-sm tracking-widest uppercase animate-pulse font-bold">Dreaming...</span>
+    </div>
+
+    <!-- Gallery Section -->
+    <div class="w-full max-w-[1400px] mt-24 px-4 sm:px-6 animate-fade-in" style="animation-delay: 0.4s;">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 border-b border-white/10 pb-6 gap-4">
+        <div>
+          <h2 class="font-heading text-4xl md:text-5xl text-white mb-2">Creations</h2>
+          <p class="text-gray-400 font-light text-sm tracking-wide">Live generated results</p>
+        </div>
+      </div>
+
+      <!-- Grid Container -->
+      <div id="imageGrid"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 transition-all duration-500 ease-in-out">
+        <!-- JS will inject cards here -->
+      </div>
+
+      <!-- Load More Button -->
+      <div id="loadMoreContainer" class="w-full flex justify-center mt-16 hidden">
+        <button id="loadMoreBtn"
+          class="group relative px-8 py-3 rounded-full bg-white/5 border border-white/10 text-white font-heading tracking-wider hover:bg-white hover:text-black transition-all duration-300 overflow-hidden">
+          <span class="relative z-10 flex items-center gap-2">
+            Load More Inspiration <i class="fa-solid fa-arrow-down animate-bounce"></i>
+          </span>
+          <div
+            class="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left">
+          </div>
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="border-t border-white/10 bg-black py-8 text-center text-gray-600 text-sm relative z-10 font-light">
+    <p>&copy; 2025 AI Vision. Powered by Pollinations.ai</p>
+  </footer>
+
+  <!-- NEW: IMAGE POPUP MODAL                     -->
+  <div id="imageModal"
+    class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/95 backdrop-blur-xl opacity-0 transition-opacity duration-300">
+
+    <!-- Close Button -->
+    <button id="closeModalBtn"
+      class="absolute top-5 right-6 text-gray-400 hover:text-white transition-colors text-4xl z-[110]">
+      &times;
+    </button>
+
+    <!-- Modal Content Container (80% Width, 90% Height) -->
+    <div class="relative w-full h-full md:w-[80%] md:h-[90%] flex flex-col items-center justify-center p-4">
+
+      <!-- The Large Image -->
+      <img id="modalImage" src="" alt="Full View"
+        class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-[0_0_60px_rgba(124,58,237,0.4)] ring-1 ring-white/10">
+
+      <!-- Action Bar inside Modal -->
+      <div class="mt-6 flex gap-4">
+        <a id="modalDownloadBtn" href="#" download
+          class="bg-accent-primary text-white px-8 py-3 rounded-full font-bold hover:bg-accent-secondary transition-all flex items-center gap-2 shadow-lg shadow-accent-primary/20">
+          <span>Download HD</span> <i class="fa-solid fa-download"></i>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- 3. Logic Script -->
+  <script src="js/script.js"></script>
+</body>
+
+</html>
