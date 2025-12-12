@@ -55,15 +55,15 @@
             onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
           <span class="text-black font-heading font-bold text-xl hidden">AV</span>
         </div>
-        <span class="font-heading text-xl tracking-wide text-white">AI Vision</span>
+        <span class="font-heading text-xl tracking-wide text-white md:block hidden">AI Vision</span>
       </a>
 
       <!-- Links -->
-      <div class="hidden md:flex gap-6 text-sm text-gray-400 font-medium tracking-wide items-center">
-        <a href="index.html" class="text-white">Create</a>
+      <div class="flex gap-6 text-sm text-gray-400 font-medium tracking-wide items-center">
+        <a href="index.html" class="text-white hidden sm:block">Create</a>
         <a href="gallery.html" class="hover:text-white transition-colors">My Gallery</a>
         <a href="community.html" class="hover:text-white transition-colors">Community</a>
-        <a href="pricing.html" class="hover:text-white transition-colors">Pricing</a>
+        <!-- <a href="pricing.html" class="hover:text-white transition-colors">Pricing</a> -->
 
         <!-- GitHub Star Button -->
         <!-- <div class="flex items-center pt-1.5 ml-2">
@@ -184,7 +184,7 @@
           data-prompt="Studio Ghibli style, lush nature, cute characters">Anime</button>
         <button
           class="style-chip text-xs bg-white/5 border border-white/10 hover:bg-accent-primary/20 hover:border-accent-primary text-gray-300 hover:text-white px-3 py-1 rounded-full transition-all cursor-pointer"
-          data-prompt="Isometric 3D render, cute floating island, unreal engine">3D Art</button>
+          data-prompt="Isometric 3D render, cute floating island, unreal engine"><spam class="font-serif">3</spam>D Art</button>
       </div>
 
       <div class="mt-2 flex justify-between text-xs text-gray-500 px-4 h-4">
@@ -200,7 +200,9 @@
           <img class="w-8 h-8 rounded-full border-2 border-[#0a0a0a]" src="https://i.pravatar.cc/100?img=3" alt="User">
           <div
             class="w-8 h-8 rounded-full border-2 border-[#0a0a0a] bg-accent-primary flex items-center justify-center text-[10px] font-bold text-white">
-            +2k</div>
+            <span class="font-serif">+1.5</span>
+            <span>k</span>
+          </div>
         </div>
         <p class="text-xs text-gray-400">Joined by <span class="text-white font-bold font-serif">1,503+</span> creators
           today</p>
@@ -300,7 +302,7 @@
   </div>
 
   <div id="liveSystemWidget"
-    class="fixed bottom-6 right-6 w-80 glass-panel rounded-2xl z-[140] shadow-2xl border-l-4 border-accent-primary transition-all duration-500 ease-in-out overflow-hidden hidden opacity-0 translate-y-10">
+    class="fixed bottom-6 right-6 w-52 md:w-80 max-h-44 md:max-h-64 glass-panel rounded-2xl z-[140] shadow-2xl border-l-4 border-accent-primary transition-all duration-500 ease-in-out overflow-hidden hidden opacity-0 translate-y-10">
     <div class="flex justify-between items-center p-4 bg-white/5 cursor-pointer" id="toggleAnalytics">
       <div class="flex items-center gap-3">
         <div class="relative flex h-2 w-2">
@@ -322,8 +324,8 @@
     <div id="analyticsBody" class="p-4 pt-0 transition-all duration-500">
       <div class="relative h-32 w-full mt-2"><canvas id="alwaysOnChart"></canvas></div>
       <div class="flex justify-between items-center mt-3 pt-3 border-t border-white/5 text-[10px] text-gray-500">
-        <span>Server: US-East-1</span>
-        <span>Latency: 24ms</span>
+        <span>Server: US-East-<span class="font-serif">1</span></span>
+        <span>Latency: <span class="font-serif">24</span>ms</span>
       </div>
     </div>
   </div>
