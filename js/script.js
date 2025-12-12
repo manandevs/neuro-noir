@@ -31,7 +31,7 @@ $(function () {
   const $declineCookies = $('#declineCookies');
 
   // Analytics Widget
-  const $liveSystemWidget = $('#liveSystemWidget'); // The main container
+  const $liveSystemWidget = $('#liveSystemWidget');
   const $analyticsBody = $('#analyticsBody');
   const $minAnalytics = $('#minAnalytics');
   const $removeAnalytics = $('#removeAnalytics');
@@ -79,10 +79,8 @@ $(function () {
     // --- CHECK COOKIES ON LOAD ---
     const consent = getCookie('ai_vision_consent');
     if (consent) {
-      // User already interacted before, show Analytics immediately
       showAnalyticsWidget();
     } else {
-      // New user, show Cookie Popup
       showCookiePopup();
     }
 
@@ -135,17 +133,21 @@ $(function () {
     setTimeout(() => $enhanceStatus.addClass('opacity-0'), 1500);
   });
 
-  // --- Modal ---
+  // --- Modal Open ---
   $(document).on('click', '.view-btn', function (e) {
     e.preventDefault();
     const imageUrl = $(this).data('url');
+    // Store URL for the specific download handler
+    $modalDownloadBtn.data('download-url', imageUrl);
+    $modalDownloadBtn.attr('href', '#'); // Prevent default link behavior visually
+
     $modalImage.attr('src', imageUrl);
-    $modalDownloadBtn.attr('href', imageUrl);
     $imageModal.removeClass('hidden');
     setTimeout(() => $imageModal.removeClass('opacity-0'), 10);
     $('body').addClass('overflow-hidden');
   });
 
+  // --- Modal Close ---
   function closeModal() {
     $imageModal.addClass('opacity-0');
     setTimeout(() => {
@@ -158,6 +160,46 @@ $(function () {
   $imageModal.on('click', function (e) { if (e.target === this) closeModal(); });
   $(document).on('keydown', function (e) { if (e.key === "Escape") closeModal(); });
 
+  // --- Modal Download Handler ---
+  $modalDownloadBtn.on('click', async function (e) {
+    e.preventDefault();
+
+    const url = $(this).data('download-url');
+    if (!url) return;
+
+    const $btn = $(this);
+    const originalHtml = $btn.html();
+
+    // UI Feedback
+    $btn.html('<span>Processing...</span> <i class="fa-solid fa-spinner fa-spin"></i>');
+    $btn.addClass('opacity-75 pointer-events-none');
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network error');
+      const blob = await response.blob();
+
+      const blobUrl = window.URL.createObjectURL(blob);
+      const tempLink = document.createElement('a');
+      tempLink.href = blobUrl;
+      tempLink.download = `AI-Vision-${Date.now()}.jpg`;
+      document.body.appendChild(tempLink);
+      tempLink.click();
+      document.body.removeChild(tempLink);
+
+      window.URL.revokeObjectURL(blobUrl);
+      showToast("Image saved successfully!", "success");
+
+    } catch (error) {
+      console.error("Download failed:", error);
+      window.open(url, '_blank');
+      showToast("Download failed. Opened in new tab.", "error");
+    } finally {
+      $btn.html(originalHtml);
+      $btn.removeClass('opacity-75 pointer-events-none');
+    }
+  });
+
   // --- Delete ---
   $(document).on('click', '.delete-btn', function (e) {
     e.stopPropagation();
@@ -169,7 +211,7 @@ $(function () {
   });
 
   // -----------------------------------------------------------
-  // COOKIE & ANALYTICS WORKFLOW (FIXED)
+  // COOKIE & ANALYTICS WORKFLOW
   // -----------------------------------------------------------
 
   function showCookiePopup() {
@@ -186,10 +228,7 @@ $(function () {
   }
 
   function transitionToAnalytics() {
-    // 1. Fade out Cookie Popup
     $cookiePopup.addClass('translate-y-10 opacity-0');
-
-    // 2. After fade out, remove popup and show widget
     setTimeout(() => {
       $cookiePopup.addClass('hidden');
       showAnalyticsWidget();
@@ -198,17 +237,12 @@ $(function () {
 
   function showAnalyticsWidget() {
     if (!$liveSystemWidget.length) return;
-
     $liveSystemWidget.removeClass('hidden');
-    // Allow reflow
     void $liveSystemWidget[0].offsetWidth;
     $liveSystemWidget.removeClass('opacity-0 translate-y-10');
-
-    // Initialize Chart
     initLiveChart();
   }
 
-  // Button Handlers
   $acceptCookies.on('click', function () {
     setCookie('ai_vision_consent', 'accepted', 30);
     showToast("Preferences Saved", "success");
@@ -217,10 +251,9 @@ $(function () {
 
   $declineCookies.on('click', function () {
     setCookie('ai_vision_consent', 'declined', 30);
-    transitionToAnalytics(); // Show chart even if declined (UX choice)
+    transitionToAnalytics();
   });
 
-  // Analytics Widget Controls
   $minAnalytics.on('click', function (e) {
     e.stopPropagation();
     if (isAnalyticsMinimized) {
@@ -242,7 +275,6 @@ $(function () {
     }, 500);
   });
 
-  // Chart Logic
   function initLiveChart() {
     const canvas = document.getElementById('alwaysOnChart');
     if (!canvas) return;
@@ -256,39 +288,41 @@ $(function () {
     gradient.addColorStop(0, 'rgba(124, 58, 237, 0.5)');
     gradient.addColorStop(1, 'rgba(124, 58, 237, 0)');
 
-    const myChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Load',
-          data: initialData,
-          backgroundColor: gradient,
-          borderColor: '#7c3aed',
-          borderWidth: 2,
-          pointRadius: 0,
-          pointHoverRadius: 4,
-          fill: true,
-          tension: 0.4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { enabled: false } },
-        scales: { x: { display: false }, y: { display: false, min: 0, max: 100 } },
-        animation: { duration: 1000, easing: 'linear' }
-      }
-    });
+    if (typeof Chart !== 'undefined') {
+      const myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Load',
+            data: initialData,
+            backgroundColor: gradient,
+            borderColor: '#7c3aed',
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: { x: { display: false }, y: { display: false, min: 0, max: 100 } },
+          animation: { duration: 1000, easing: 'linear' }
+        }
+      });
 
-    analyticsInterval = setInterval(() => {
-      const newDataPoint = Math.floor(Math.random() * (95 - 40 + 1)) + 40;
-      const currentData = myChart.data.datasets[0].data;
-      currentData.shift();
-      currentData.push(newDataPoint);
-      myChart.update();
-      $('#liveMetric').text(newDataPoint + "%");
-    }, 2000);
+      analyticsInterval = setInterval(() => {
+        const newDataPoint = Math.floor(Math.random() * (95 - 40 + 1)) + 40;
+        const currentData = myChart.data.datasets[0].data;
+        currentData.shift();
+        currentData.push(newDataPoint);
+        myChart.update();
+        $('#liveMetric').text(newDataPoint + "%");
+      }, 2000);
+    }
   }
 
 
@@ -323,14 +357,15 @@ $(function () {
 
       showToast("Image Generated!", "success");
 
-      // === NEW ADDITION: SCROLL TO GALLERY ===
+      // Scroll to Gallery
       $('html, body').animate({
-        scrollTop: $grid.offset().top - 250 // Offset allows seeing the "Gallery" title
+        scrollTop: $grid.offset().top - 250
       }, 1000);
 
     }, 1500);
   }
 
+  // --- UPDATED RENDER FUNCTION WITH LOADER ---
   function renderCard(promptText, badgeText, method = 'prepend', isUserGenerated = false, id = null, seed = null) {
     if (!seed) seed = promptText.length + 12345;
     const width = 800;
@@ -347,9 +382,21 @@ $(function () {
 
     const cardHTML = `
       <div class="image-card group relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#111] border border-white/5 ring-1 ring-white/5 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(124,58,237,0.3)] cursor-pointer animate-[fadeIn_0.6s_ease-out]">
-        <img src="${imageUrl}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" alt="${promptText}" loading="lazy">
-        <div class="absolute top-4 right-4 ${badgeClass} text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-lg z-10 uppercase tracking-wider">${badgeText}</div>
-        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+        
+        <!-- LOADER -->
+        <div class="image-loader absolute inset-0 flex items-center justify-center z-0">
+            <div class="w-8 h-8 border-2 border-white/20 border-t-accent-primary rounded-full animate-spin"></div>
+        </div>
+
+        <!-- IMAGE (Starts Invisible, fades in on load) -->
+        <img src="${imageUrl}" 
+             class="relative z-10 w-full h-full object-cover transition duration-700 opacity-0 group-hover:scale-110 group-hover:opacity-100" 
+             alt="${promptText}" 
+             loading="lazy"
+             onload="this.classList.remove('opacity-0'); this.classList.add('opacity-90'); this.previousElementSibling.remove()">
+             
+        <div class="absolute top-4 right-4 ${badgeClass} text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-lg z-20 uppercase tracking-wider">${badgeText}</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 z-20">
           <div class="transform translate-y-4 group-hover:translate-y-0 transition duration-500 ease-out">
             <h3 class="font-heading text-2xl text-white mb-1 pt-10 px-1 capitalize truncate tracking-wide">${title}</h3>
             <p class="text-gray-300 text-xs font-light line-clamp-2 mb-4 leading-relaxed opacity-80">${promptText}</p>
