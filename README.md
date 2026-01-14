@@ -1,4 +1,10 @@
+⭐️ Don't forget to give the project a star if you liked it!
+
 # 🟣 Neuro Noir (AI Vision)
+
+<img width="1920" height="904" alt="{3151526D-D098-4ABB-8935-BA395334E198}" src="https://github.com/user-attachments/assets/9512094d-4a5f-49e4-92a1-570765eaae87" />
+
+<br />
 
 > **Turn Words Into Reality.**
 > A stunning, cyberpunk-themed AI image generator powered by open-source diffusion models. Create, enhance, and save HD artwork instantly.
@@ -110,7 +116,6 @@ Since this is a static web application, it requires no complex build steps.
     ```bash
     # using python
     python -m http.server 8000
-    
     # OR using VS Code Live Server extension
     ```
 
@@ -127,3 +132,41 @@ Since this is a static web application, it requires no complex build steps.
 ├── 📄 index.html           # Main Generator Page
 ├── 📄 gallery.html         # User Gallery Page
 └── 📄 community.html       # Community Page
+```
+## 🤝 Contributing & Customization
+
+**This project is yours to explore!** 🛠️
+
+I explicitly encourage you to **fork this repository** and make it your own. Whether you want to add new features, change the cyberpunk theme, integrate a different API, or just experiment with the code—**go ahead!**
+
+1.  **Fork** the Project
+2.  Create your Feature Branch
+3.  Commit your Changes
+4.  Push to the Branch
+5.  Open a Pull Request
+
+---
+
+### ❤️ Support the Project
+
+If you found this project helpful, cool, or inspiring, please show some love!
+
+1.  **Give it a Star 🌟** (It really helps others find the project!)
+2.  **Follow me on GitHub 🚀** for more exciting builds like this.
+
+<div align="center">
+
+  <a href="https://github.com/manandevs/neuro-noir">
+    <img src="https://img.shields.io/github/stars/manandevs/neuro-noir?style=social" alt="Star Repo" />
+  </a>
+  <a href="https://github.com/manandevs">
+    <img src="https://img.shields.io/github/followers/manandevs?style=social" alt="Follow MananDevs" />
+  </a>
+
+</div>
+
+<br />
+
+<div align="center">
+  <p>Made with 💜 and Neon by <b>MananDevs</b></p>
+</div>
